@@ -215,7 +215,7 @@ return function(opts)
             local original_done = done
             local done_called = false
             done = function(...)
-                -- plenary will throw an error if its async callback is called more than once
+                -- the async runner will throw an error if its callback is called more than once
                 if done_called then
                     return
                 end

@@ -1,25 +1,11 @@
 # Testing
 
-- The test suite includes unit and integration tests and depends on
-  `plenary.nvim`
-- The default `test/minimal.vim` (passed to the instantiation of _Neovim_ with
-  `-u`) assumes that you've installed `plenary.nvim` one directory above where
-  this project lives, since the test suite modifies `rtp` as follows:
-
-```vim
-...
-set rtp+=../plenary.nvim
-...
-```
-
-- Ensure that your plugin directory structure looks something like the
-  following:
-
-```vim
-.
-├── plenary.nvim
-└── null-ls
-```
+- The test suite includes unit and integration tests.
+- It uses `mini.test` and vendored copies of `luassert` and `say` under
+  `test/deps/lua`, so no external test plugins are required.
+- `test/minimal_init.lua` is the minimal init used by the test runner.
+- `test/debug_init.lua` is an optional init for debugging with
+  `one-small-step`.
 
 ## Suite
 

@@ -14,3 +14,21 @@ path = "lua/null-ls/diff.lua"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright Neovim contributors. All rights reserved."
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "test/deps/lua/luassert/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2012 Olivine Labs, LLC."
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "test/deps/lua/say/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2012 Olivine Labs, LLC."
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "test/deps/lua/mini/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2021 Evgeni Chasnovski"
+SPDX-License-Identifier = "MIT"

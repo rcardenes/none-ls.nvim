@@ -1,7 +1,7 @@
 # Installing and configuring null-ls
 
 You can install null-ls using any package manager. Here is a simple example
-showing how to install it and its dependencies using
+showing how to install it using
 [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
@@ -10,13 +10,8 @@ use({
     config = function()
         require("null-ls").setup()
     end,
-    requires = { "nvim-lua/plenary.nvim" },
 })
 ```
-
-As shown above, the plugin depends on
-[plenary.nvim](https://github.com/nvim-lua/plenary.nvim), so make sure you've
-installed that plugin, too.
 
 Below is a simple example demonstrating how you might configure null-ls. See
 [BUILTINS](BUILTINS.md) for a list of built-in sources like the ones in the

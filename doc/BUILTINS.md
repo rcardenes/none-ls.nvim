@@ -935,7 +935,7 @@ local sources = { null_ls.builtins.diagnostics.ltrs }
 - Filetypes: `{ "text", "markdown", "markdown" }`
 - Method: `diagnostics`
 - Command: `ltrs`
-- Args: `{ "check", "-m", "-r", "--text", "$TEXT" }`
+- Args: `{ "check", "-r", "$FILENAME" }`
 
 ### [markdownlint](https://github.com/DavidAnson/markdownlint)
 
@@ -3395,7 +3395,7 @@ local sources = { null_ls.builtins.formatting.prettier }
 
 #### Defaults
 
-- Filetypes: `{ "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "css", "scss", "less", "html", "json", "jsonc", "yaml", "markdown", "markdown.mdx", "graphql", "handlebars", "svelte", "astro", "htmlangular" }`
+- Filetypes: `{ "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "css", "scss", "less", "html", "json", "json5", "jsonc", "yaml", "markdown", "markdown.mdx", "graphql", "handlebars", "svelte", "astro", "htmlangular" }`
 - Methods: `formatting, range_formatting`
 - Command: `prettier`
 - Args: dynamically resolved (see [source](https://github.com/nvimtools/none-ls.nvim/blob/main/lua/null-ls/builtins/formatting/prettier.lua))
@@ -3417,7 +3417,7 @@ local sources = { null_ls.builtins.formatting.prettierd }
 
 #### Defaults
 
-- Filetypes: `{ "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "css", "scss", "less", "html", "json", "jsonc", "yaml", "markdown", "markdown.mdx", "graphql", "handlebars", "svelte", "astro", "htmlangular" }`
+- Filetypes: `{ "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "css", "scss", "less", "html", "json", "json5", "jsonc", "yaml", "markdown", "markdown.mdx", "graphql", "handlebars", "svelte", "astro", "htmlangular" }`
 - Methods: `formatting, range_formatting`
 - Command: `prettierd`
 - Args: dynamically resolved (see [source](https://github.com/nvimtools/none-ls.nvim/blob/main/lua/null-ls/builtins/formatting/prettierd.lua))
@@ -4308,7 +4308,7 @@ local sources = { null_ls.builtins.hover.dictionary }
 
 #### Notes
 
-- Depends on Plenary's `curl` module, which itself depends on having `curl` installed and available on your `$PATH`.
+- Depends on having `curl` installed and available on your `$PATH`.
 
 ### printenv
 

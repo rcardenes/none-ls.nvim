@@ -14,24 +14,26 @@ return h.make_builtin({
                 done({ cword .. ": " .. def })
             end
 
-            require("plenary.curl").request({
-                url = "https://api.dictionaryapi.dev/api/v2/entries/en/" .. cword,
-                method = "get",
-                callback = vim.schedule_wrap(function(data)
-                    if not (data and data.body) then
-                        send_definition("no definition available")
-                        return
-                    end
+            vim.system(
+                { "curl", "-s", "https://api.dictionaryapi.dev/api/v2/entries/en/" .. cword },
+                {
+                    callback = vim.schedule_wrap(function(result)
+                        local body = result.stdout
+                        if not body or body == "" then
+                            send_definition("no definition available")
+                            return
+                        end
 
-                    local ok, decoded = pcall(vim.json.decode, data.body)
-                    if not ok or not (decoded and decoded[1]) then
-                        send_definition("no definition available")
-                        return
-                    end
+                        local ok, decoded = pcall(vim.json.decode, body)
+                        if not ok or not (decoded and decoded[1]) then
+                            send_definition("no definition available")
+                            return
+                        end
 
-                    send_definition(decoded[1].meanings[1].definitions[1].definition)
-                end),
-            })
+                        send_definition(decoded[1].meanings[1].definitions[1].definition)
+                    end),
+                }
+            )
         end,
         async = true,
     },
@@ -39,7 +41,7 @@ return h.make_builtin({
         url = "https://dictionaryapi.dev/",
         description = "Shows the first available definition for the current word under the cursor.",
         notes = {
-            "Depends on Plenary's `curl` module, which itself depends on having `curl` installed and available on your `$PATH`.",
+            "Depends on having `curl` installed and available on your `$PATH`.",
         },
     },
 })

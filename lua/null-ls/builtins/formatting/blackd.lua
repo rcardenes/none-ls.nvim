@@ -61,20 +61,43 @@ return h.make_builtin({
             local config = params:get_config()
             local hostname = config.hostname or "localhost"
             local port = config.port or 45484
-            require("plenary.curl").post(hostname .. ":" .. port, {
-                body = table.concat(params.content, "\n"),
-                headers = {
-                    ["X-Line-Length"] = config.line_length or 88,
-                    ["X-Skip-Source-First-Line"] = config.skip_source_first_line or nil,
-                    ["X-Skip-String-Normalization"] = config.skip_string_normalization or nil,
-                    ["X-Skip-Magic-Trailing-Comma"] = config.skip_magic_trailing_comma or nil,
-                    ["X-Preview"] = config.preview or nil,
-                    ["X-Fast-Or-Safe"] = config.fast == "fast" and "fast" or nil,
-                    ["X-Python-Variant"] = config.python_variant or "",
-                },
-                callback = function(response)
-                    if response.status == 200 then
-                        return done({ { text = response.body } })
+            local body = table.concat(params.content, "\n")
+            local headers = {
+                { "X-Line-Length", tostring(config.line_length or 88) },
+                { "X-Skip-Source-First-Line", config.skip_source_first_line and "true" or nil },
+                { "X-Skip-String-Normalization", config.skip_string_normalization and "true" or nil },
+                { "X-Skip-Magic-Trailing-Comma", config.skip_magic_trailing_comma and "true" or nil },
+                { "X-Preview", config.preview and "true" or nil },
+                { "X-Fast-Or-Safe", config.fast == "fast" and "fast" or nil },
+                { "X-Python-Variant", config.python_variant or "" },
+            }
+
+            local args = { "curl", "-s", "-X", "POST" }
+            for _, header in ipairs(headers) do
+                if header[2] ~= nil then
+                    table.insert(args, "-H")
+                    table.insert(args, header[1] .. ": " .. header[2])
+                end
+            end
+            table.insert(args, "-d")
+            table.insert(args, body)
+            table.insert(args, "-w")
+            table.insert(args, "\n%{http_code}")
+            table.insert(args, "http://" .. hostname .. ":" .. port)
+
+            vim.system(args, {
+                callback = function(result)
+                    if result.code ~= 0 then
+                        return done()
+                    end
+
+                    local raw = result.stdout or ""
+                    local status_idx = raw:find("\n%d+$")
+                    local response_body = status_idx and raw:sub(1, status_idx - 1) or raw
+                    local status = status_idx and tonumber(raw:sub(status_idx + 1)) or nil
+
+                    if status == 200 then
+                        return done({ { text = response_body } })
                     end
                     return done()
                 end,

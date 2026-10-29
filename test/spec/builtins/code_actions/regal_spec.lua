@@ -1,13 +1,11 @@
 local stub = require("luassert.stub")
-local mock = require("luassert.mock")
 
 local code_actions = require("null-ls.builtins").code_actions
 
 local diagnostic_get = stub(vim.diagnostic, "get")
 local nvim_set_lines = stub(vim.api, "nvim_buf_set_lines")
 local nvim_cmd = stub(vim.api, "nvim_command")
-
-local Job = mock(require("plenary.job"))
+local system_stub = stub(vim, "system")
 
 describe("code_actions regal", function()
     local handler = code_actions.regal._opts.handler
@@ -103,10 +101,11 @@ describe("code_actions regal", function()
         assert.equals(2, vim.tbl_count(actions))
         actions[2].action()
 
-        assert.spy(Job.new).was_called()
+        assert.stub(system_stub).was_called()
 
-        local args = Job.new.calls[1].vals[2]
-        assert.equals("yq", args.command)
-        assert.same({ "-i", '.rules.cat1.code1.level|="ignore"', ".regal/config.yaml" }, args.args)
+        local args = system_stub.calls[1].refs[1]
+        local opts = system_stub.calls[1].refs[2]
+        assert.same({ "yq", "-i", '.rules.cat1.code1.level|="ignore"', ".regal/config.yaml" }, args)
+        assert.equals("function", type(opts.callback))
     end)
 end)

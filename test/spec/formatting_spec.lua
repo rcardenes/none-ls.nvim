@@ -54,6 +54,10 @@ describe("formatting", function()
         u.buf.content:clear()
         u.make_params:clear()
 
+        vim.wait(10, function()
+            return false
+        end)
+
         mock.revert(api)
 
         u.buf.content.returns(nil)

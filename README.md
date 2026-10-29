@@ -87,9 +87,8 @@ see [HELPERS](doc/HELPERS.md) for details.
 
 ## Setup
 
-Install null-ls using your favorite package manager. The plugin depends on
-[plenary.nvim](https://github.com/nvim-lua/plenary.nvim), which you are
-(probably) already using.
+Install null-ls using your favorite package manager. The plugin has no
+external dependencies.
 
 To get started, you must set up null-ls and register at least one source. See
 [BUILTINS](doc/BUILTINS.md) for a list of available built-in sources and
@@ -319,17 +318,12 @@ vim.lsp.buf.format({ timeout_ms = 2000 })
 
 ## Tests
 
-The test suite includes unit and integration tests and depends on plenary.nvim.
+The test suite includes unit and integration tests. It uses `mini.test` and
+vendored copies of `luassert` and `say` under `test/deps/lua`, so no external
+test plugins are required.
+
 Run `make test` in the root of the project to run the suite or
 `FILE=filename_spec.lua make test-file` to test an individual file.
-
-To avoid a dependency on any plugin managers, the test suite will set up its
-plugin runtime under the `./tests` directory to always have a plenary version
-available.
-
-If you run into plenary-related issues while running the tests, make sure you
-have an up-to-date version of the plugin by clearing that cache with:
-`make clean`.
 
 All tests expect to run on the latest release version of Neovim and are not
 guaranteed to work on versions built from `HEAD`.

@@ -5,23 +5,38 @@ local client = require("null-ls.client")
 
 local FORMATTING = methods.internal.FORMATTING
 
+local split_lines = function(output)
+    output = output or ""
+    if output == "" then
+        return {}
+    end
+    local lines = vim.split(output, "\n", { trimempty = false })
+    if lines[#lines] == "" then
+        table.remove(lines)
+    end
+    return lines
+end
+
 local run_job = function(opts)
-    local async = require("plenary.async")
-    local Job = require("plenary.job")
+    local async = require("null-ls.async")
 
     local _run_job = async.wrap(function(_opts, _done)
-        _opts.on_exit = function(j, status)
-            _done(status, j:result(), j:stderr_result())
-        end
-
-        Job:new(_opts):start()
+        vim.system(
+            { _opts.command, table.unpack(_opts.args) },
+            {
+                cwd = _opts.cwd,
+                callback = function(result)
+                    _done(result.code, split_lines(result.stdout), split_lines(result.stderr))
+                end,
+            }
+        )
     end, 2)
 
     return _run_job(opts)
 end
 
 local tmpname = function()
-    local async = require("plenary.async")
+    local async = require("null-ls.async")
 
     local mktemp = async.wrap(function(_done)
         vim.defer_fn(function()
@@ -57,7 +72,7 @@ local find_nix_fmt = function(opts, done)
         return
     end
 
-    local async = require("plenary.async")
+    local async = require("null-ls.async")
 
     local notification_title = "discovering `nix fmt` entrypoint"
     local notification_token = "nix-flake-fmt-discovery"

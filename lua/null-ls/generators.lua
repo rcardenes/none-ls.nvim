@@ -22,7 +22,7 @@ local once = function(func)
     end
 end
 
--- Think about this function as plenary's wrap, but for iterators.
+-- Think about this function as the async shim's `wrap`, but for iterators.
 local wrap_iter = function(func, argc)
     local once_func = once(func)
     return function(...)
@@ -34,7 +34,7 @@ local wrap_iter = function(func, argc)
 end
 
 M.run = function(generators, params, opts, callback)
-    local a = require("plenary.async")
+    local a = require("null-ls.async")
 
     local all_results = {}
     local safe_callback = function()

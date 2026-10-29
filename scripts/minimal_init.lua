@@ -27,7 +27,6 @@ local function load_plugins()
     })
     deps.add({
         source = "nvimtools/none-ls.nvim",
-        depends = { "nvim-lua/plenary.nvim" },
     })
     deps.later(null_ls_config)
 end

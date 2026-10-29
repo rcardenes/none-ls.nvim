@@ -33,23 +33,45 @@ return h.make_builtin({
             local root = u.get_root()
             local filepath = vim.api.nvim_buf_get_name(params.bufnr)
 
-            require("plenary.curl").post(hostname .. ":" .. port, {
-                body = table.concat(params.content, "\n"),
-                headers = {
-                    ["XX-SRC"] = root,
-                    ["XX-PATH"] = filepath,
+            local body = table.concat(params.content, "\n")
+            vim.system(
+                {
+                    "curl",
+                    "-s",
+                    "-X",
+                    "POST",
+                    "-H",
+                    "XX-SRC: " .. root,
+                    "-H",
+                    "XX-PATH: " .. filepath,
+                    "-d",
+                    body,
+                    "-w",
+                    "\n%{http_code}",
+                    "http://" .. hostname .. ":" .. port,
                 },
-                callback = function(response)
-                    if response.status == 200 then
-                        return done({ { text = response.body } })
-                    else
+                {
+                    callback = function(result)
                         local log = require("null-ls.logger")
-                        log:error(string.format("error formatting with isortd %s %s", response.status, response.body))
-                    end
+                        if result.code ~= 0 then
+                            log:error(string.format("error formatting with isortd: %s", result.stderr or result.stdout or "unknown error"))
+                            return done()
+                        end
 
-                    return done()
-                end,
-            })
+                        local raw = result.stdout or ""
+                        local status_idx = raw:find("\n%d+$")
+                        local response_body = status_idx and raw:sub(1, status_idx - 1) or raw
+                        local status = status_idx and tonumber(raw:sub(status_idx + 1)) or nil
+
+                        if status == 200 then
+                            return done({ { text = response_body } })
+                        end
+
+                        log:error(string.format("error formatting with isortd %s %s", tostring(status), response_body))
+                        return done()
+                    end,
+                }
+            )
         end,
     },
 })

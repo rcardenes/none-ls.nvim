@@ -752,18 +752,17 @@ describe("sources", function()
 
         describe("is_registered", function()
             local mock_name = "mock-name"
-            local mock_sources = {
-                name = mock_name,
-                filetypes = { "text" },
-                sources = { mock_raw_source, mock_raw_source },
-            }
 
             it("should return false if source and name are not registered", function()
                 assert.equals(sources.is_registered(mock_name), false)
             end)
 
             it("should return true if source is registered", function()
-                sources.register(mock_sources)
+                sources.register({
+                    name = mock_name,
+                    filetypes = { "text" },
+                    sources = { mock_raw_source, mock_raw_source },
+                })
 
                 assert.equals(sources.is_registered(mock_name), true)
             end)

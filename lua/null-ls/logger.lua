@@ -5,9 +5,17 @@ local default_notify_opts = {
     title = "null-ls",
 }
 
+local level_weights = {
+    trace = 1,
+    debug = 2,
+    info = 3,
+    warn = 4,
+    error = 5,
+}
+
 local log = {}
 
---- Adds a log entry using Plenary.log
+--- Adds a log entry to the null-ls log file
 ---@param msg any
 ---@param level string [same as vim.log.log_levels]
 function log:add_entry(msg, level)
@@ -23,33 +31,20 @@ function log:add_entry(msg, level)
         return
     end
 
-    if self.__handle then
-        local fmt_msg = self.__handle[level]
-        ---@cast fmt_msg fun(msg: string)
-        fmt_msg(msg)
+    local effective_level = cfg.debug and "trace" or (cfg.log_level or "warn")
+    if (level_weights[level] or 0) < (level_weights[effective_level] or 0) then
         return
     end
 
-    local default_opts = {
-        plugin = "null-ls",
-        level = cfg.log_level or "warn",
-        use_console = false,
-        info_level = 4,
-    }
-    if cfg.debug then
-        default_opts.level = "trace"
-    end
-
-    local has_plenary, plenary_log = pcall(require, "plenary.log")
-    if not has_plenary then
+    local path = self:get_path()
+    vim.fn.mkdir(vim.fn.stdpath("log"), "p")
+    local file = io.open(path, "a")
+    if not file then
         return
     end
 
-    local handle = plenary_log.new(default_opts)
-    local fmt_msg = handle[level]
-    ---@cast fmt_msg fun(msg: string)
-    fmt_msg(msg)
-    self.__handle = handle
+    file:write(string.format("[%s] [%s] %s\n", os.date("%Y-%m-%d %H:%M:%S"), level:upper(), tostring(msg)))
+    file:close()
 end
 
 --- Retrieves the path of the logfile

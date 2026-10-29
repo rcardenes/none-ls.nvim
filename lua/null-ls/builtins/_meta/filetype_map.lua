@@ -243,6 +243,9 @@ return {
     diagnostics = { "cfn_lint", "spectral", "vacuum" },
     formatting = { "biome", "prettier", "prettierd" }
   },
+  json5 = {
+    formatting = { "prettier", "prettierd" }
+  },
   jsonc = {
     formatting = { "biome", "prettier", "prettierd" }
   },

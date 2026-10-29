@@ -18,5 +18,3 @@ jobs:
           version: "scm"
           extra_luarocks_args: |
             --force
-          dependencies: |
-            plenary.nvim

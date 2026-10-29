@@ -31,30 +31,32 @@ local ignore_inline_action = function(params, d, prev_ln, prev_ign, indent)
 end
 
 local ignore_config_action = function(d)
-    local Job = require("plenary.job")
     return {
         title = "Ignore Regal rule '" .. d.code .. "' via " .. REGAL_CFG,
         action = function()
-            Job:new({
-                command = "yq",
-                args = {
+            vim.system(
+                {
+                    "yq",
                     "-i",
                     ".rules." .. d.user_data.category .. "." .. d.code .. '.level|="ignore"',
                     REGAL_CFG,
                 },
-                on_exit = vim.schedule_wrap(function(j, return_val)
-                    if return_val ~= 0 then
-                        logger:error(j:stderr_result()[1])
-                    else
-                        vim.notify(
-                            "'" .. d.code .. "' ignored in " .. REGAL_CFG,
-                            vim.log.levels.INFO,
-                            { title = "none-ls" }
-                        )
-                        vim.api.nvim_command("write")
-                    end
-                end),
-            }):start()
+                {
+                    callback = vim.schedule_wrap(function(result)
+                        if result.code ~= 0 then
+                            local stderr = result.stderr or ""
+                            logger:error(stderr:match("^[^\n]*") or stderr)
+                        else
+                            vim.notify(
+                                "'" .. d.code .. "' ignored in " .. REGAL_CFG,
+                                vim.log.levels.INFO,
+                                { title = "none-ls" }
+                            )
+                            vim.api.nvim_command("write")
+                        end
+                    end),
+                }
+            )
         end,
     }
 end
